@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+
 const TEXTS = {
   es: {
     heroTitle: "Potencia tu negocio con inteligencia artificial — Lanzia te ayuda a automatizar y crecer.",
@@ -18,73 +19,118 @@ const TEXTS = {
     cta: "Try now",
     howTitle: "How it works",
     how: ["Describe your idea", "AI generates structure, copy and images", "Customize if you want", "Publish and expand"],
-    benefitsTitle: "Benefits", benefits: ["No-code", "Fast", "In your language", "Professional designs", "Scalable"],
-    contactTitle: "Contact / Waitlist", contactSubtitle: "Leave your email and we'll notify you at launch",
+    benefitsTitle: "Benefits",
+    benefits: ["No-code", "Fast", "In your language", "Professional designs", "Scalable"],
+    contactTitle: "Contact / Waitlist",
+    contactSubtitle: "Leave your email and we'll notify you at launch",
     name: "Name", email: "Email", message: "Message", send: "Send", footer: "© 2025 Lanzia AI — All rights reserved"
   }
 }
+
 export default function Home() {
   const [lang, setLang] = useState('es')
   useEffect(() => {
-    try { const nav = (navigator.language || 'es').toLowerCase(); if (nav.startsWith('en')) setLang('en'); else setLang('es') } catch (e) { setLang('es') }
+    try {
+      const nav = (navigator.language || 'es').toLowerCase()
+      if (nav.startsWith('en')) setLang('en')
+      else setLang('es')
+    } catch (e) {
+      setLang('es')
+    }
   }, [])
+
   const t = TEXTS[lang]
-  import { useState } from "react";
+  const FORMSPREE = "https://formspree.io/f/manlavln"
 
-  export default function Home() {
-    const [sent, setSent] = useState(false);
-    const [error, setError] = useState(false);
+  // ✅ Aquí está la parte correcta que debes tener
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState(false);
 
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-      const form = e.target;
-      const data = new FormData(form);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSending(true);
+    setSent(false);
+    setError(false);
 
-      try {
-        const response = await fetch("https://formspree.io/f/manlavln", {
-          method: "POST",
-          body: data,
-          headers: { Accept: "application/json" },
-        });
+    const formData = new FormData(e.target);
 
-        if (response.ok) {
-          form.reset();
-          setSent(true);
-          setError(false);
-        } else {
-          setError(true);
-        }
-      } catch {
+    try {
+      const response = await fetch(FORMSPREE, {
+        method: "POST",
+        body: formData,
+        headers: { Accept: "application/json" },
+      });
+
+      if (response.ok) {
+        e.target.reset();
+        setSent(true);
+      } else {
         setError(true);
       }
-    };
+    } catch (err) {
+      setError(true);
+    } finally {
+      setSending(false);
+    }
+  };
 
-    const FORMSPREE = "https://formspree.io/f/manlavln"
-    return (
-      <main className="container">
-        <nav className="nav">
-          <div className="logo"><img src="/logo.svg" alt="logo" /><strong>Lanzia AI</strong></div>
-          <div className="lang"><button className="switch" onClick={() => setLang(lang == 'es' ? 'en' : 'es')}>{lang.toUpperCase()}</button></div>
-        </nav>
-        <header className="hero">
-          <h1>{t.heroTitle}</h1>
-          <p>{t.heroSubtitle}</p>
-          <div className="cta-row"><a href="#contact"><button className="btn">{t.cta}</button></a></div>
-        </header>
-        <section className="section"><h2>{t.howTitle}</h2><div className="grid">{t.how.map((h, i) => (<div className="card" key={i}><h3>{i + 1}.</h3><p>{h}</p></div>))}</div></section>
-        <section className="section"><h2>{t.benefitsTitle}</h2><div className="grid">{t.benefits.map((b, i) => (<div className="card" key={i}><p>{b}</p></div>))}</div></section>
-        <section id="contact" className="section"><h2>{t.contactTitle}</h2><p>{t.contactSubtitle}</p>
-          <form className="contact-form" onSubmit={handleSubmit}>
-            <input name="name" placeholder={t.name} required style={{ padding: 12, borderRadius: 10, background: 'transparent', border: '1px solid rgba(255,255,255,0.06)', color: 'inherit' }} />
-            <input name="email" type="email" placeholder={t.email} required style={{ padding: 12, borderRadius: 10, background: 'transparent', border: '1px solid rgba(255,255,255,0.06)', color: 'inherit' }} />
-            <textarea name="message" placeholder={t.message} rows={4} required style={{ padding: 12, borderRadius: 10, background: 'transparent', border: '1px solid rgba(255,255,255,0.06)', color: 'inherit' }} />
-            <button className="btn" type="submit">{t.send}</button>
-            {sent && <p style={{ color: "limegreen", marginTop: 10 }}>✅ Gracias, te contactaremos pronto.</p>}
-            {error && <p style={{ color: "red", marginTop: 10 }}>❌ Ocurrió un error. Intenta de nuevo.</p>}
+  return (
+    <main className="container">
+      <nav className="nav">
+        <div className="logo"><img src="/logo.svg" alt="logo" /><strong>Lanzia AI</strong></div>
+        <div className="lang"><button className="switch" onClick={() => setLang(lang == 'es' ? 'en' : 'es')}>{lang.toUpperCase()}</button></div>
+      </nav>
 
-          </form>
-        </section>
-        <footer className="footer"><span>{t.footer}</span><span>Contact: <a href="mailto:infolanzia@gmail.com">infolanzia@gmail.com</a></span></footer>
-      </main>
-    )
-  }
+      <header className="hero">
+        <h1>{t.heroTitle}</h1>
+        <p>{t.heroSubtitle}</p>
+        <div className="cta-row"><a href="#contact"><button className="btn">{t.cta}</button></a></div>
+      </header>
+
+      <section className="section">
+        <h2>{t.howTitle}</h2>
+        <div className="grid">
+          {t.how.map((h, i) => (
+            <div className="card" key={i}>
+              <h3>{i + 1}.</h3>
+              <p>{h}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="section">
+        <h2>{t.benefitsTitle}</h2>
+        <div className="grid">
+          {t.benefits.map((b, i) => (
+            <div className="card" key={i}><p>{b}</p></div>
+          ))}
+        </div>
+      </section>
+
+      <section id="contact" className="section">
+        <h2>{t.contactTitle}</h2>
+        <p>{t.contactSubtitle}</p>
+
+        <form className="contact-form" onSubmit={handleSubmit}>
+          <input name="name" placeholder={t.name} required style={{ padding: 12, borderRadius: 10, background: 'transparent', border: '1px solid rgba(255,255,255,0.06)', color: 'inherit' }} />
+          <input name="email" type="email" placeholder={t.email} required style={{ padding: 12, borderRadius: 10, background: 'transparent', border: '1px solid rgba(255,255,255,0.06)', color: 'inherit' }} />
+          <textarea name="message" placeholder={t.message} rows={4} required style={{ padding: 12, borderRadius: 10, background: 'transparent', border: '1px solid rgba(255,255,255,0.06)', color: 'inherit' }} />
+
+          <button className="btn" type="submit" disabled={sending}>
+            {sending ? "Enviando..." : t.send}
+          </button>
+
+          {sent && <p style={{ color: "limegreen", marginTop: 10 }}>✅ Gracias, te contactaremos pronto.</p>}
+          {error && <p style={{ color: "red", marginTop: 10 }}>❌ Ocurrió un error. Intenta de nuevo.</p>}
+        </form>
+      </section>
+
+      <footer className="footer">
+        <span>{t.footer}</span>
+        <span>Contact: <a href="mailto:infolanzia@gmail.com">infolanzia@gmail.com</a></span>
+      </footer>
+    </main>
+  )
+}
