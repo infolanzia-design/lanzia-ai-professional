@@ -29,7 +29,7 @@ export default function Home(){
     try{ const nav=(navigator.language||'es').toLowerCase(); if(nav.startsWith('en')) setLang('en'); else setLang('es') }catch(e){setLang('es')}
   },[])
   const t = TEXTS[lang]
-  const FORMSPREE = process.env.NEXT_PUBLIC_FORMSPREE_ACTION || ''
+  const FORMSPREE = "https://formspree.io/f/manlavln"
   return (
     <main className="container">
       <nav className="nav">
